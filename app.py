@@ -1,4 +1,5 @@
 import pickle
+import re
 from tkinter import Scale
 from flask import Flask,request,app,jsonify,url_for,render_template
 import numpy as np
@@ -36,6 +37,20 @@ def predict_api():
     #the output(prediction) in the model is a two dimensional array so so we take the first value
     print(output[0])
     return jsonify(output[0])
+
+
+#create a post method
+@app.route('/predict',methods=['POST'])
+def predict():
+    #take up all the values from the form
+     data=[float(x) for x in request.form.values()] 
+     #convert it to an array with the reshape and transform it with the scalar(standarizing the data)
+     final_input=scalar.transform(np.array(data).reshape(1,-1))
+     print(final_input)
+     #predict and get the output
+     output=regmodel.predict(final_input)[0]
+     return render_template("home.html",prediction_text="The house price predicted is : {}".format(output))
+
 
 
 if __name__=="__main__":
